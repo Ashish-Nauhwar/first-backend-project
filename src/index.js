@@ -1,16 +1,27 @@
+import express from "express"
 import dotenv from "dotenv";
 
+
 import connectDB from "./db/index.js";
+
+
 
 dotenv.config({
     path: './env'
 
 })
 
-connectDB()
+//initilize  express
+const app = express()
+const PORT = process.env.PORT || 8000;
 
+connectDB()
+// connect to Mongodb
 .then(() => {
-    app.listen(process.env.PORT || 8000 , () => {
+    console.log("✅ MongoDB connected successfully!")
+
+    // 4. Start the Express server ONLY after the database connects
+    app.listen(PORT , () => {
         console.log(`server is running at port : ${process.env.PORT}`);
     })
 })
