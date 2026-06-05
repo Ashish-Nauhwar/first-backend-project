@@ -1,8 +1,8 @@
-import mongoose from "mongoose"
+import mongoose , {Schema} from "mongoose"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema(
     {
         username: {
             type: String,
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
             index: true,
             
         },
-        avtar: {
+        avatar: {
             type: String, //cloudinary url
             required: true
 
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
         },
         watchHistory:[
             {
-                type:mongoose.Schema.Types.ObjectId,
+                type: Schema.Types.ObjectId,
                 ref: "video"
             }
         ],
@@ -55,11 +55,11 @@ const userSchema = new mongoose.Schema(
     },{timestamps:true}
 )
 
-
+// Save karte time password ko incrypt kar do
 userSchema.pre("save" , async function (next) {
     if(!this.isModified("password")) return next();
-    this.password = becrypt.hash(this.password , 10)
-    next( )
+    this.password = await becrypt.hash(this.password , 10)
+    next()
 })
 
 userSchema.methods.isPasswordCorrect = async function
@@ -99,10 +99,4 @@ userSchema.methods.generateRefreshToken = function(){
 }
 
 
-
-
-
-
-
-
-export const Uesr = mongoose.model("User" , userSchema);
+export const User = mongoose.model("User" , userSchema);
