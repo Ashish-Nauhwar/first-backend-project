@@ -8,20 +8,20 @@
     path: './.env'
     })
 
-    const PORT = process.env.PORT || 8000;
+    const PORT = process.env.PORT || 8000
 
     connectDB()
     // connect to Mongodb
     .then(() => {
     console.log("✅ MongoDB connected successfully!")
 
-    // 4. Start the Express server ONLY after the database connects
+    // Start the Express server ONLY after the database connects
     app.listen(PORT , () => {
-        console.log(`server is running at port : ${process.env.PORT}`);
+        console.log(`server is running at port : ${process.env.PORT}`)
     })
     })
     .catch((error) => {
-    console.log("MONGODB connection failed", error);
+    console.log("MONGODB connection failed", error)
     }
     )
 

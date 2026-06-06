@@ -20,7 +20,7 @@ const userSchema = new Schema(
             trim: true,
             
         },
-        fullname: {
+        fullName: {
             type: String,
             required: true,       
             trim: true,
@@ -58,8 +58,8 @@ const userSchema = new Schema(
 // Save karte time password ko incrypt kar do
 userSchema.pre("save" , async function (next) {
     if(!this.isModified("password")) return next();
-    this.password = await becrypt.hash(this.password , 10)
-    next()
+    this.password = await bcrypt.hash(this.password , 10)
+    // next()
 })
 
 userSchema.methods.isPasswordCorrect = async function
@@ -73,7 +73,7 @@ userSchema.methods.generateRefreshToken = function(){
             _id: this.id,
             email: this.email,
             username: this.username,
-            fullname: this.fullname
+            fullName: this.fullName
         },
         
             process.env.ACCESS_TOKEN_SECRET,
@@ -88,7 +88,7 @@ userSchema.methods.generateRefreshToken = function(){
             _id: this.id,
             email: this.email,
             username: this.username,
-            fullname: this.fullname
+            fullName: this.fullName
         },
         
             process.env.REFRESH_TOKEN_SECRET,
