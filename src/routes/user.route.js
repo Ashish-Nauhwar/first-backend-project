@@ -5,6 +5,7 @@ import { upload } from "../middlewares/multer.middlewares.js";
 const router = Router()
 
 router.route("/register").post(
+    // .fields() is used when you expect multiple, separate files from diffrent form input fields simultaneously
     upload.fields([
         {
             name: "avatar",
@@ -16,7 +17,7 @@ router.route("/register").post(
         }
 
     ]),
-     registerUser
+     registerUser //first multer process karega then express registerUser ko pass kardega to save the textual body 
     )
 
    

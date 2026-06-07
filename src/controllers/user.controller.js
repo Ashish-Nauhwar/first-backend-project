@@ -3,6 +3,7 @@ import { ApiError } from "../utils/apiErrors.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/apiResponse.js";
+import mongoose from "mongoose";
 
 
 const registerUser = asyncHandler( async (req, res) => {
@@ -19,16 +20,20 @@ const registerUser = asyncHandler( async (req, res) => {
 
     const {fullName, email, username, password } = req.body
     //console.log("email: ", email);
+    
 
+    //four fields in array and loops over them using .some() 
+    // if any fields are missing or " " then if goes true and throw error
     if (
         [fullName, email, username, password].some((field) => field?.trim() === "")
     ) {
         throw new ApiError(400, "All fields are required")
     }
 
-
-    
+    //calls mongoose's findoen() method to search for an existing document matching the query criteria 
+    // it uses await because database queries are asynchronous
     const existedUser = await User.findOne({
+        // uses mongoDB logical or operator to check two parameter already exist?
         $or: [{ username }, { email }]
     })
     console.log(existedUser)
@@ -38,12 +43,14 @@ const registerUser = asyncHandler( async (req, res) => {
    
     
     //console.log(req.files);
-
+// to get local file path of the uploaded avatar and ?. for preventing app from crashing
     const avatarLocalPath = req.files?.avatar[0]?.path;
     //const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
     let coverImageLocalPath;
+    //req.files exists and array is valid and arr length > 0
     if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+        //code accesses the first item and extracts its path
         coverImageLocalPath = req.files.coverImage[0].path
     }
     
@@ -59,7 +66,7 @@ const registerUser = asyncHandler( async (req, res) => {
         throw new ApiError(400, "Avatar file is required")
     }
    
-
+// database record creation 
     const user = await User.create({
         fullName,
         avatar: avatar.url,
@@ -69,6 +76,7 @@ const registerUser = asyncHandler( async (req, res) => {
         username: username.toLowerCase()
     })
 
+    //once user creaed then user._id is used to find that user and .select() method used include or exclude the fields 
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
     )
