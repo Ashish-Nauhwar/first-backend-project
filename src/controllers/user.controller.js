@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 
 //making method to generate access and refresh token and call it multiple times
 
-    const generateAccessAndRefreshTokens = async(userId) => {
+const generateAccessAndRefreshTokens = async(userId) => {
         try {
             const user = await User.findOne(userId)
             const accessToken = user.generateAccessToken()
@@ -26,87 +26,87 @@ import mongoose from "mongoose";
     }
 
 const registerUser = asyncHandler( async (req, res) => {
-    // get user details from frontend
-    // validation - not empty
-    // check if user already exists: username, email
-    // check for images, check for avatar
-    // upload them to cloudinary, avatar
-    // create user object - create entry in db
-    // remove password and refresh token field from response
-    // check for user creation
-    // return res
+     // get user details from frontend
+     // validation - not empty
+     // check if user already exists: username, email
+     // check for images, check for avatar
+     // upload them to cloudinary, avatar
+     // create user object - create entry in db
+     // remove password and refresh token field from response
+     // check for user creation
+     // return res
 
 
-    const {fullName, email, username, password } = req.body
-    //console.log("email: ", email);
+     const {fullName, email, username, password } = req.body
+     //console.log("email: ", email);
     
 
-    //four fields in array and loops over them using .some() 
+     //four fields in array and loops over them using .some() 
     // if any fields are missing or " " then if goes true and throw error
-    if (
+     if (
         [fullName, email, username, password].some((field) => field?.trim() === "")
-    ) {
+     ) {
         throw new ApiError(400, "All fields are required")
-    }
+     }
 
-    //calls mongoose's findoen() method to search for an existing document matching the query criteria 
-    // it uses await because database queries are asynchronous
-    const existedUser = await User.findOne({
+     //calls mongoose's findoen() method to search for an existing document matching the query criteria 
+     // it uses await because database queries are asynchronous
+     const existedUser = await User.findOne({
         // uses mongoDB logical or operator to check two parameter already exist?
         $or: [{ username }, { email }]
-    })
-    console.log(existedUser)
-    if (existedUser) {
+     })
+     console.log(existedUser)
+     if (existedUser) {
         throw new ApiError(409, "User with email or username already exists")
-    }
+     }
    
     
-    //console.log(req.files);
-// to get local file path of the uploaded avatar and ?. for preventing app from crashing
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    //const coverImageLocalPath = req.files?.coverImage[0]?.path;
+     //console.log(req.files);
+     // to get local file path of the uploaded avatar and ?. for preventing app from crashing
+     const avatarLocalPath = req.files?.avatar[0]?.path;
+     //const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
-    let coverImageLocalPath;
-    //req.files exists and array is valid and arr length > 0
-    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+     let coverImageLocalPath;
+     //req.files exists and array is valid and arr length > 0
+     if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
         //code accesses the first item and extracts its path
         coverImageLocalPath = req.files.coverImage[0].path
-    }
+     }
     
 
-    if (!avatarLocalPath) {
+     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar location is not found")
-    }
+     }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath)
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+     const avatar = await uploadOnCloudinary(avatarLocalPath)
+     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
-    if (!avatar) {
+     if (!avatar) {
         throw new ApiError(400, "Avatar file is required")
-    }
+     }
    
-// database record creation 
-    const user = await User.create({
+     // database record creation 
+     const user = await User.create({
         fullName,
         avatar: avatar.url,
         coverImage: coverImage?.url || "",
         email, 
         password,
         username: username.toLowerCase()
-    })
+     })
 
-    //once user creaed then user._id is used to find that user and .select() method used include or exclude the fields 
-    const createdUser = await User.findById(user._id).select(
+     //once user creaed then user._id is used to find that user and .select() method used include or exclude the fields 
+     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
-    )
+     )
 
-    if (!createdUser) {
+     if (!createdUser) {
         throw new ApiError(500, "Something went wrong while registering the user")
-    }
+     }
 
-    return res.status(201).json(
+     return res.status(201).json(
         new ApiResponse(200, createdUser, "User registered Successfully")
-    )
+     )
 
 } )
 
@@ -122,7 +122,6 @@ const loginUser = asyncHandler( async (req , res ) => {
     if(!username || !email){
         throw new ApiError(400 , "username or email is required")
     }
-
 
 
 
@@ -165,5 +164,15 @@ const loginUser = asyncHandler( async (req , res ) => {
    )
 
 })
+
+const loggedOut = asyncHandler (async(req , res) => {
+    
+})
+
+
+
+
+
+
 
 export {registerUser , loginUser};
