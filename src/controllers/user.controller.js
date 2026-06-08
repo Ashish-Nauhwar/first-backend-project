@@ -11,21 +11,21 @@ import mongoose from "mongoose";
 const generateAccessAndRefreshTokens = async (userId) => {
    try {
       const user = await User.findById(userId)
-      
+
       const accessToken = user.generateAccessToken()
       const refreshToken = user.generateRefreshToken()
 
       user.refreshToken = refreshToken
-   
-     await user.save({ validateBeforeSave: false })
-     console.log("5555555555555")
+
+      await user.save({ validateBeforeSave: false })
+
 
       return { accessToken, refreshToken }
 
 
    } catch (error) {
-     throw new ApiError(400 , "something went wrong while generating generateAccessAndRefreshTokens")
-}
+      throw new ApiError(400, "something went wrong while generating generateAccessAndRefreshTokens")
+   }
 }
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -121,8 +121,8 @@ const loginUser = asyncHandler(async (req, res) => {
    //access and referesh token
    //send cookie
 
-console.log("BODY:", req.body);
-   const { email , username , password} = req.body
+   console.log("BODY:", req.body);
+   const { email, username, password } = req.body
    if (!username && !email) {
       throw new ApiError(400, "username or email is required")
    }
