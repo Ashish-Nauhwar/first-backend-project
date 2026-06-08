@@ -57,7 +57,7 @@ const userSchema = new Schema(
 
 // Save karte time password ko incrypt kar do
 userSchema.pre("save" , async function (next) {
-    if(!this.isModified("password")) return next();
+    if(!this.isModified("password")) return ;
     this.password = await bcrypt.hash(this.password , 10)
     // next()
 })
@@ -76,9 +76,9 @@ userSchema.methods.generateAccessToken = function(){
             fullName: this.fullName
         },
         
-            process.env.ACCESS_TOKEN_SECRET,
+         process.env.ACCESS_TOKEN_SECRET,
         {
-            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
     )
 }
@@ -86,9 +86,7 @@ userSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this.id,
-            email: this.email,
-            username: this.username,
-            fullName: this.fullName
+           
         },
         
             process.env.REFRESH_TOKEN_SECRET,
