@@ -57,9 +57,9 @@ const userSchema = new Schema(
 
 // Save karte time password ko incrypt kar do
 userSchema.pre("save" , async function (next) {
-    if(!this.isModified("password")) return ;
+    if(!this.isModified("password")) return next() ;
     this.password = await bcrypt.hash(this.password , 10)
-    // next()
+    next()
 })
 
 userSchema.methods.isPasswordCorrect = async function
@@ -67,7 +67,9 @@ userSchema.methods.isPasswordCorrect = async function
     return await bcrypt.compare(password , this.password)
 }
 
+//short-lived access token for user authentication
 userSchema.methods.generateAccessToken = function(){
+    //sign methos from jsonwebtoken library to create a new token 
     return jwt.sign(
         {
             _id: this.id,
@@ -82,7 +84,10 @@ userSchema.methods.generateAccessToken = function(){
         }
     )
 }
+
+//longer-lived refresh token used to request new access tokens wihtout forcing the use to log in again
 userSchema.methods.generateRefreshToken = function(){
+  //  call jwt.sign() again
     return jwt.sign(
         {
             _id: this.id,
